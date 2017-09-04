@@ -795,6 +795,10 @@ typedef enum {
      */
     NOTMUCH_SORT_MESSAGE_ID,
     /**
+     * Sort by keys.
+     */
+    NOTMUCH_SORT_KEYS,
+    /**
      * Do not sort.
      */
     NOTMUCH_SORT_UNSORTED
@@ -816,6 +820,14 @@ typedef enum {
      * Sort by message-id.
      */
     NOTMUCH_SORT_KEY_MESSAGE_ID,
+    /**
+     * Sort by subject.
+     */
+    NOTMUCH_SORT_KEY_SUBJECT,
+    /**
+     * Sort by from.
+     */
+    NOTMUCH_SORT_KEY_FROM,
 } notmuch_sort_key_t;
 
 /**
