@@ -789,13 +789,17 @@ static const notmuch_opt_desc_t common_options[] = {
     { .opt_keyword = &search_context.sort, .name = "sort", .keywords =
 	  (notmuch_keyword_t []){ { "oldest-first", NOTMUCH_SORT_OLDEST_FIRST },
 				  { "newest-first", NOTMUCH_SORT_NEWEST_FIRST },
+				  { "from-ascending", NOTMUCH_SORT_FROM_ASC },
+				  { "from-descending", NOTMUCH_SORT_FROM_DESC },
+				  { "subject-ascending", NOTMUCH_SORT_SUBJECT_ASC },
+				  { "subject-descending", NOTMUCH_SORT_SUBJECT_DESC },
 				  { 0, 0 } } },
     { .opt_keyword = &search_context.format_sel, .name = "format", .keywords =
 	  (notmuch_keyword_t []){ { "json", NOTMUCH_FORMAT_JSON },
-				  { "sexp", NOTMUCH_FORMAT_SEXP },
-				  { "text", NOTMUCH_FORMAT_TEXT },
-				  { "text0", NOTMUCH_FORMAT_TEXT0 },
-				  { 0, 0 } } },
+				{ "sexp", NOTMUCH_FORMAT_SEXP },
+				{ "text", NOTMUCH_FORMAT_TEXT },
+				{ "text0", NOTMUCH_FORMAT_TEXT0 },
+				{ 0, 0 } } },
     { .opt_int = &notmuch_format_version, .name = "format-version" },
     { }
 };

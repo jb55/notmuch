@@ -327,6 +327,18 @@ _notmuch_query_search_documents (notmuch_query_t *query,
 	case NOTMUCH_SORT_NEWEST_FIRST:
 	    enquire.set_sort_by_value (NOTMUCH_VALUE_TIMESTAMP, true);
 	    break;
+	case NOTMUCH_SORT_FROM_ASC:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_FROM, FALSE);
+	    break;
+	case NOTMUCH_SORT_FROM_DESC:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_FROM, TRUE);
+	    break;
+	case NOTMUCH_SORT_SUBJECT_ASC:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_SUBJECT, FALSE);
+	    break;
+	case NOTMUCH_SORT_SUBJECT_DESC:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_SUBJECT, TRUE);
+	    break;
 	case NOTMUCH_SORT_MESSAGE_ID:
 	    enquire.set_sort_by_value (NOTMUCH_VALUE_MESSAGE_ID, false);
 	    break;
