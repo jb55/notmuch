@@ -196,6 +196,10 @@ notmuch_query_set_sort (notmuch_query_t *query, notmuch_sort_t sort)
 	query->sort_key = NOTMUCH_SORT_KEY_MESSAGE_ID;
 	query->sort_type = NOTMUCH_SORT_TYPE_ASCENDING;
 	break;
+    case NOTMUCH_SORT_KEYS:
+	query->sort_key = NOTMUCH_SORT_KEY_MESSAGE_ID;
+	query->sort_type = NOTMUCH_SORT_TYPE_ASCENDING;
+	break;
     case NOTMUCH_SORT_UNSORTED:
 	query->sort_key = NOTMUCH_SORT_KEY_NONE;
 	query->sort_type = NOTMUCH_SORT_TYPE_NONE;
@@ -387,6 +391,12 @@ _notmuch_query_search_documents (notmuch_query_t *query,
 	    break;
 	case NOTMUCH_SORT_KEY_MESSAGE_ID:
 	    enquire.set_sort_by_value (NOTMUCH_VALUE_MESSAGE_ID, sort_reverse);
+	    break;
+	case NOTMUCH_SORT_KEY_FROM:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_FROM, sort_reverse);
+	    break;
+	case NOTMUCH_SORT_KEY_SUBJECT:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_SUBJECT, sort_reverse);
 	    break;
 	case NOTMUCH_SORT_KEY_NONE:
 	    break;

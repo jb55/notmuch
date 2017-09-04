@@ -788,8 +788,9 @@ static search_context_t search_context = {
 static const notmuch_opt_desc_t common_options[] = {
     { .opt_keyword = &search_context.sort, .name = "sort", .keywords =
 	  (notmuch_keyword_t []){ { "oldest-first", NOTMUCH_SORT_OLDEST_FIRST },
-				  { "newest-first", NOTMUCH_SORT_NEWEST_FIRST },
-				  { 0, 0 } } },
+			      { "newest-first", NOTMUCH_SORT_NEWEST_FIRST },
+			      { "keys", NOTMUCH_SORT_KEYS },
+			      { 0, 0 } } },
     { .opt_keyword = &search_context.format_sel, .name = "format", .keywords =
 	  (notmuch_keyword_t []){ { "json", NOTMUCH_FORMAT_JSON },
 				  { "sexp", NOTMUCH_FORMAT_SEXP },
