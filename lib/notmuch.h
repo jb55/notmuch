@@ -782,6 +782,22 @@ typedef enum {
      */
     NOTMUCH_SORT_NEWEST_FIRST,
     /**
+     * Sort by from: in ascending order
+     */
+    NOTMUCH_SORT_FROM_ASC,
+    /**
+     * Sort by from: in descending order
+     */
+    NOTMUCH_SORT_FROM_DESC,
+    /**
+     * Sort by subject: in ascending order
+     */
+    NOTMUCH_SORT_SUBJECT_ASC,
+    /**
+     * Sort by subject: in descending order
+     */
+    NOTMUCH_SORT_SUBJECT_DESC,
+    /**
      * Sort by message-id.
      */
     NOTMUCH_SORT_MESSAGE_ID,
