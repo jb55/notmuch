@@ -104,6 +104,30 @@ Init_notmuch (void)
      */
     rb_define_const (mod, "SORT_NEWEST_FIRST", INT2FIX (NOTMUCH_SORT_NEWEST_FIRST));
     /*
+     * Document-const: Notmuch::SORT_FROM_ASC
+     *
+     * Sort query results by from in ascending order
+     */
+    rb_define_const (mod, "SORT_FROM_ASC", INT2FIX (NOTMUCH_SORT_FROM_ASC));
+    /*
+     * Document-const: Notmuch::SORT_FROM_DESC
+     *
+     * Sort query results by from in descending order
+     */
+    rb_define_const (mod, "SORT_FROM_DESC", INT2FIX (NOTMUCH_SORT_FROM_DESC));
+    /*
+     * Document-const: Notmuch::SORT_SUBJECT_ASC
+     *
+     * Sort query results by subject in ascending order
+     */
+    rb_define_const (mod, "SORT_SUBJECT_ASC", INT2FIX (NOTMUCH_SORT_SUBJECT_ASC));
+    /*
+     * Document-const: Notmuch::SORT_SUBJECT_DESC
+     *
+     * Sort query results by from in descending order
+     */
+    rb_define_const (mod, "SORT_SUBJECT_DESC", INT2FIX (NOTMUCH_SORT_SUBJECT_DESC));
+    /*
      * Document-const: Notmuch::SORT_MESSAGE_ID
      *
      * Sort query results by message id
