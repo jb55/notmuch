@@ -382,7 +382,7 @@ Complete list of currently available key bindings:
 
 \\{notmuch-search-mode-map}"
   (make-local-variable 'notmuch-search-query-string)
-  (make-local-variable 'notmuch-search-oldest-first)
+  (make-local-variable 'notmuch-search-sort-order)
   (make-local-variable 'notmuch-search-target-thread)
   (make-local-variable 'notmuch-search-target-line)
   (setq notmuch-buffer-refresh-function #'notmuch-search-refresh-view)
@@ -957,7 +957,7 @@ PROMPT is the string to prompt with."
 
 (put 'notmuch-search 'notmuch-doc "Search for messages.")
 ;;;###autoload
-(defun notmuch-search (&optional query oldest-first target-thread target-line no-display)
+(defun notmuch-search (&optional query sort-order target-thread target-line no-display)
   "Display threads matching QUERY in a notmuch-search buffer.
 
 If QUERY is nil, it is read interactively from the minibuffer.
@@ -980,7 +980,7 @@ the configured default sort order."
     nil
     ;; Use the default search order (if we're doing a search from a
     ;; search buffer, ignore any buffer-local overrides)
-    (default-value 'notmuch-search-oldest-first)))
+    (default-value 'notmuch-search-sort-order)))
 
   (let* ((query (or query (notmuch-read-query "Notmuch search: ")))
 	 (buffer (get-buffer-create (notmuch-search-buffer-title query))))
@@ -991,29 +991,26 @@ the configured default sort order."
     ;; Don't track undo information for this buffer
     (set 'buffer-undo-list t)
     (set 'notmuch-search-query-string query)
-    (set 'notmuch-search-oldest-first oldest-first)
+    (set 'notmuch-search-sort-order sort-order)
     (set 'notmuch-search-target-thread target-thread)
     (set 'notmuch-search-target-line target-line)
     (notmuch-tag-clear-cache)
     (let ((proc (get-buffer-process (current-buffer)))
 	  (inhibit-read-only t))
       (if proc
-	  (error "notmuch search process already running for query `%s'" query)
-	)
+	  (error "notmuch search process already running for query `%s'" query))
       (erase-buffer)
       (goto-char (point-min))
       (save-excursion
-	(let ((proc (notmuch-start-notmuch
-		     "notmuch-search" buffer #'notmuch-search-process-sentinel
-		     "search" "--format=sexp" "--format-version=4"
-		     (if oldest-first
-			 "--sort=oldest-first"
-		       "--sort=newest-first")
-		     query))
-	      ;; Use a scratch buffer to accumulate partial output.
-	      ;; This buffer will be killed by the sentinel, which
-	      ;; should be called no matter how the process dies.
-	      (parse-buf (generate-new-buffer " *notmuch search parse*")))
+	(let* ((proc (notmuch-start-notmuch
+		      "notmuch-search" buffer #'notmuch-search-process-sentinel
+		      "search" "--format=sexp" "--format-version=4"
+		      (concat "--sort=" (symbol-name sort-order))
+		      query))
+	       ;; Use a scratch buffer to accumulate partial output.
+	       ;; This buffer will be killed by the sentinel, which
+	       ;; should be called no matter how the process dies.
+	       (parse-buf (generate-new-buffer " *notmuch search parse*")))
 	  (process-put proc 'parse-buf parse-buf)
 	  (set-process-filter proc 'notmuch-search-process-filter)
 	  (set-process-query-on-exit-flag proc nil))))
@@ -1029,20 +1026,29 @@ thread. Otherwise, point will be moved to attempt to be in the
 same relative position within the new buffer."
   (interactive)
   (let ((target-line (line-number-at-pos))
-	(oldest-first notmuch-search-oldest-first)
+	(sort-order notmuch-search-sort-order)
 	(target-thread (notmuch-search-find-thread-id 'bare))
 	(query notmuch-search-query-string))
     ;; notmuch-search erases the current buffer.
-    (notmuch-search query oldest-first target-thread target-line t)
+    (notmuch-search query sort-order target-thread target-line t)
     (goto-char (point-min))))
+
+(defun notmuch-toggle-order (order)
+  (case order
+    (newest-first 'oldest-first)
+    (oldest-first 'newest-first)
+    (from-ascending 'from-descending)
+    (from-descending 'from-ascending)
+    (subject-ascending 'subject-descending)
+    (subject-descending 'subject-ascending)))
 
 (defun notmuch-search-toggle-order ()
   "Toggle the current search order.
 
 This command toggles the sort order for the current search. The
-default sort order is defined by `notmuch-search-oldest-first'."
+default sort order is defined by `notmuch-search-sort-order'."
   (interactive)
-  (set 'notmuch-search-oldest-first (not notmuch-search-oldest-first))
+  (set 'notmuch-search-sort-order (notmuch-toggle-order notmuch-search-sort-order))
   (notmuch-search-refresh-view))
 
 (defun notmuch-group-disjunctive-query-string (query-string)
@@ -1066,7 +1072,7 @@ current search results AND the additional query string provided."
     (notmuch-search (if (string= grouped-original-query "*")
 			grouped-query
 		      (concat grouped-original-query " and " grouped-query))
-		    notmuch-search-oldest-first)))
+		    notmuch-search-sort-order)))
 
 (defun notmuch-search-filter-by-tag (tag)
   "Filter the current search results based on a single tag.
@@ -1075,7 +1081,7 @@ Runs a new search matching only messages that match both the
 current search results AND that are tagged with the given tag."
   (interactive
    (list (notmuch-select-tag-with-completion "Filter by tag: " notmuch-search-query-string)))
-  (notmuch-search (concat notmuch-search-query-string " and tag:" tag) notmuch-search-oldest-first))
+  (notmuch-search (concat notmuch-search-query-string " and tag:" tag) notmuch-search-sort-order))
 
 ;;;###autoload
 (defun notmuch ()
