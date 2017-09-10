@@ -95,7 +95,11 @@ searches so they still work in customize."
 			    (choice :tag " Sort Order"
 				    (const :tag "Default" nil)
 				    (const :tag "Oldest-first" oldest-first)
-				    (const :tag "Newest-first" newest-first)))
+				    (const :tag "Newest-first" newest-first)
+				    (const :tag "Subject-ascending" subject-ascending)
+				    (const :tag "Subject-descending" subject-descending)
+				    (const :tag "From-ascending" from-ascending)
+				    (const :tag "From-descending" from-descending)))
 		     (group :format "%v" :inline t (const :format "" :search-type)
 			    (choice :tag " Search Type"
 				    (const :tag "Search mode" nil)
@@ -381,7 +385,7 @@ afterwards.")
     (setq search (notmuch-hello-trim search))
     (let ((history-delete-duplicates t))
       (add-to-history 'notmuch-search-history search)))
-  (notmuch-search search notmuch-search-oldest-first))
+  (notmuch-search search notmuch-search-sort-order))
 
 (defun notmuch-hello-add-saved-search (widget)
   (interactive)
@@ -443,7 +447,7 @@ diagonal."
     (notmuch-search (widget-get widget
 				:notmuch-search-terms)
 		    (widget-get widget
-				:notmuch-search-oldest-first))))
+				:notmuch-search-sort-order))))
 
 (defun notmuch-saved-search-count (search)
   (car (process-lines notmuch-command "count" search)))
@@ -575,10 +579,8 @@ with `notmuch-hello-query-counts'."
 		  (widget-insert (make-string column-indent ? )))
 	      (let* ((name (plist-get elem :name))
 		     (query (plist-get elem :query))
-		     (oldest-first (case (plist-get elem :sort-order)
-				     (newest-first nil)
-				     (oldest-first t)
-				     (otherwise notmuch-search-oldest-first)))
+		     (order (plist-get elem :sort-order))
+		     (sort-order (if (not order) notmuch-search-sort-order order))
 		     (search-type (eq (plist-get elem :search-type) 'tree))
 		     (msg-count (plist-get elem :count)))
 		(widget-insert (format "%8s "
@@ -586,7 +588,7 @@ with `notmuch-hello-query-counts'."
 		(widget-create 'push-button
 			       :notify #'notmuch-hello-widget-search
 			       :notmuch-search-terms query
-			       :notmuch-search-oldest-first oldest-first
+			       :notmuch-search-sort-order sort-order
 			       :notmuch-search-type search-type
 			       name)
 		(setq column-indent

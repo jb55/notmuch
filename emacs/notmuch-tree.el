@@ -33,7 +33,7 @@
 (require 'notmuch-parser)
 
 (eval-when-compile (require 'cl))
-(declare-function notmuch-search "notmuch" (&optional query oldest-first target-thread target-line))
+(declare-function notmuch-search "notmuch" (&optional query sort-order target-thread target-line))
 (declare-function notmuch-call-notmuch-process "notmuch" (&rest args))
 (declare-function notmuch-read-query "notmuch" (prompt))
 (declare-function notmuch-search-find-thread-id "notmuch" (&optional bare))
