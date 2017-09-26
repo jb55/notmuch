@@ -178,6 +178,7 @@ there will be called at other points of notmuch execution."
     (define-key map "r" 'notmuch-search-reply-to-thread-sender)
     (define-key map "R" 'notmuch-search-reply-to-thread)
     (define-key map "o" 'notmuch-search-toggle-order)
+    (define-key map "O" 'notmuch-search-change-order)
     (define-key map "c" 'notmuch-search-stash-map)
     (define-key map "t" 'notmuch-search-filter-by-tag)
     (define-key map "l" 'notmuch-search-filter)
@@ -1041,6 +1042,19 @@ same relative position within the new buffer."
     (from-descending 'from-ascending)
     (subject-ascending 'subject-descending)
     (subject-descending 'subject-ascending)))
+
+(defun notmuch-search-change-order (&optional sort-order)
+  "Change the current search order.
+
+This command changes the order for current search. The default
+sort order is defuned by `notmuch-search-sort-order'."
+  (interactive)
+  (let ((so (if sort-order sort-order
+	      (cdr (assoc (completing-read
+			   "Select a sort order:" notmuch-sort-orders)
+			  notmuch-sort-orders)))))
+    (set 'notmuch-search-sort-order so)
+    (notmuch-search-refresh-view)))
 
 (defun notmuch-search-toggle-order ()
   "Toggle the current search order.
