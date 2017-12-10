@@ -377,18 +377,18 @@ _notmuch_query_search_documents (notmuch_query_t *query,
 
 	enquire.set_weighting_scheme (Xapian::BoolWeight ());
 
-	switch (query->sort) {
-	case NOTMUCH_SORT_OLDEST_FIRST:
-	    enquire.set_sort_by_value (NOTMUCH_VALUE_TIMESTAMP, false);
+	bool sort_reverse = false;
+	if (query->sort_type == NOTMUCH_SORT_TYPE_DESCENDING)
+	    sort_reverse = true;
+
+	switch (query->sort_key) {
+	case NOTMUCH_SORT_KEY_TIMESTAMP:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_TIMESTAMP, sort_reverse);
 	    break;
-	case NOTMUCH_SORT_NEWEST_FIRST:
-	    enquire.set_sort_by_value (NOTMUCH_VALUE_TIMESTAMP, true);
+	case NOTMUCH_SORT_KEY_MESSAGE_ID:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_MESSAGE_ID, sort_reverse);
 	    break;
-	case NOTMUCH_SORT_MESSAGE_ID:
-	    enquire.set_sort_by_value (NOTMUCH_VALUE_MESSAGE_ID, false);
-	    break;
-	case NOTMUCH_SORT_UNSORTED:
-	case NOTMUCH_SORT_UNSET:
+	case NOTMUCH_SORT_KEY_NONE:
 	    break;
 	}
 
