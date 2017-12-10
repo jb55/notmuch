@@ -779,6 +779,10 @@ notmuch_query_create (notmuch_database_t *database,
  */
 typedef enum {
     /**
+     * Value was not set
+     */
+    NOTMUCH_SORT_UNSET = -1,
+    /**
      * Oldest first.
      */
     NOTMUCH_SORT_OLDEST_FIRST,
@@ -795,6 +799,42 @@ typedef enum {
      */
     NOTMUCH_SORT_UNSORTED
 } notmuch_sort_t;
+
+/**
+ * Sort key values for notmuch_query_set_sort_key
+ */
+typedef enum {
+    /**
+     * Do not sort.
+     */
+    NOTMUCH_SORT_KEY_NONE=0,
+    /**
+     * Sort by timestamp (from Date: header)
+     */
+    NOTMUCH_SORT_KEY_TIMESTAMP,
+    /**
+     * Sort by message-id.
+     */
+    NOTMUCH_SORT_KEY_MESSAGE_ID,
+} notmuch_sort_key_t;
+
+/**
+ * Sort type values for notmuch_query_set_sort_type
+ */
+typedef enum {
+    /**
+     * Do not sort.
+     */
+    NOTMUCH_SORT_TYPE_NONE=0,
+    /**
+     * Ascending order
+     */
+    NOTMUCH_SORT_TYPE_ASCENDING,
+    /**
+     * Descending order
+     */
+    NOTMUCH_SORT_TYPE_DESCENDING,
+} notmuch_sort_type_t;
 
 /**
  * Return the query_string of this query. See notmuch_query_create.
@@ -864,6 +904,32 @@ notmuch_query_set_sort (notmuch_query_t *query, notmuch_sort_t sort);
  */
 notmuch_sort_t
 notmuch_query_get_sort (const notmuch_query_t *query);
+
+/**
+ * Specify the sort key for this query.
+ */
+void
+notmuch_query_set_sort_key (notmuch_query_t *query, notmuch_sort_key_t key);
+
+/**
+ * Return the sort_key specified for this query. See
+ * notmuch_query_set_sort_key.
+ */
+notmuch_sort_key_t
+notmuch_query_get_sort_key (const notmuch_query_t *query);
+
+/**
+ * Specify the sort type for this query.
+ */
+void
+notmuch_query_set_sort_type (notmuch_query_t *query, notmuch_sort_type_t type);
+
+/**
+ * Return the sort_type specified for this query. See
+ * notmuch_query_set_sort_type.
+ */
+notmuch_sort_type_t
+notmuch_query_get_sort_type (const notmuch_query_t *query);
 
 /**
  * Add a tag that will be excluded from the query results by default.
