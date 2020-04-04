@@ -21,9 +21,3 @@ addons:
 script:
   - ./configure
   - make test
-
-notifications:
-  irc:
-    channels:
-      - "chat.freenode.net#notmuch"
-    on_success: change
