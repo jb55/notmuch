@@ -78,10 +78,10 @@ Supported options for **address** include
         matching messages. If ``--output=count`` is specified, include all
         variants in the count.
 
-``--sort=``\ (**newest-first**\ \|\ **oldest-first**)
-    This option can be used to present results in either chronological
-    order (**oldest-first**) or reverse chronological order
-    (**newest-first**).
+``--sort=<order>``
+    Where <order> can be one of **oldest-first**, **newest-first**,
+    **subject-ascending**, **subject-descending**,
+    **from-ascending**, **from-descending**
 
     By default, results will be displayed in reverse chronological
     order, (that is, the newest results will be displayed first).

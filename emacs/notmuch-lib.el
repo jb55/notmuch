@@ -92,14 +92,25 @@ $PATH)."
   :type 'string
   :group 'notmuch-external)
 
-(defcustom notmuch-search-oldest-first t
+(setq notmuch-sort-orders
+  '(("Oldest-first" . oldest-first)
+    ("Newest-first" . newest-first)
+    ("Subject-ascending" . subject-ascending)
+    ("Subject-descending" . subject-descending)
+    ("From-ascending" . from-ascending)
+    ("From-descending" . from-descending)))
+
+(defcustom notmuch-search-sort-order 'oldest-first
   "Show the oldest mail first when searching.
 
 This variable defines the default sort order for displaying
 search results. Note that any filtered searches created by
 `notmuch-search-filter' retain the search order of the parent
 search."
-  :type 'boolean
+  :type (append '(choice :tag " Sort Order")
+		(mapcar (lambda (pair)
+			  `(const :tag ,(car pair) ,(cdr pair)))
+			notmuch-sort-orders))
   :group 'notmuch-search)
 
 (defcustom notmuch-poll-script nil
