@@ -1003,7 +1003,10 @@ the configured default sort order."
       (erase-buffer)
       (goto-char (point-min))
       (save-excursion
-	(let* ((proc (notmuch-start-notmuch
+	(let* ((sort-order (if (not sort-order)
+			       (default-value 'notmuch-search-sort-order)
+			     sort-order))
+	       (proc (notmuch-start-notmuch
 		      "notmuch-search" buffer #'notmuch-search-process-sentinel
 		      "search" "--format=sexp" "--format-version=4"
 		      (concat "--sort=" (symbol-name sort-order))
