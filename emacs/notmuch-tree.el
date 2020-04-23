@@ -307,6 +307,7 @@ FUNC."
     (define-key map [remap notmuch-jump-search]
       (notmuch-tree-close-message-pane-and #'notmuch-jump-search))
 
+    (define-key map "Q" 'notmuch-tree-quit-all)
     (define-key map "S" 'notmuch-search-from-tree-current-query)
     (define-key map "U" 'notmuch-unthreaded-from-tree-current-query)
     (define-key map "Z" 'notmuch-tree-from-unthreaded-current-query)
@@ -627,6 +628,10 @@ If it at end go to next message."
   (interactive "P")
   (when (or (not (notmuch-tree-close-message-window)) kill-both)
     (kill-buffer (current-buffer))))
+
+(defun notmuch-tree-quit-all ()
+  (interactive)
+  (notmuch-tree-quit t))
 
 (defun notmuch-tree-close-message-window ()
   "Close the message-window. Return t if close succeeds."
