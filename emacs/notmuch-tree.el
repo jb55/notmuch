@@ -351,6 +351,7 @@ FUNC."
     (define-key map "p" 'notmuch-tree-prev-matching-message)
     (define-key map "N" 'notmuch-tree-next-message)
     (define-key map "P" 'notmuch-tree-prev-message)
+    (define-key map "L" 'notmuch-tree-filter)
     (define-key map (kbd "M-p") 'notmuch-tree-prev-thread)
     (define-key map (kbd "M-n") 'notmuch-tree-next-thread)
     (define-key map "k" 'notmuch-tag-jump)
@@ -1040,6 +1041,14 @@ Complete list of currently available key bindings:
 		(unless (= exit-status 0)
 		  (insert (format " (process returned %d)" exit-status)))
 		(insert "\n")))))))))
+
+(defun notmuch-tree-filter (query)
+  "Filter or LIMIT the current tree based on a new query string.
+
+Reshows the current tree with matches defined by the new query-string."
+  (interactive (list (notmuch-read-query "Filter tree: ")))
+  (setq notmuch-tree-query-context (if (string= query "") nil query))
+  (notmuch-tree-refresh-view t))
 
 (defun notmuch-tree-process-filter (proc string)
   "Process and filter the output of \"notmuch show\" for tree view."
