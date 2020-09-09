@@ -27,6 +27,8 @@ struct _notmuch_query {
     notmuch_database_t *notmuch;
     const char *query_string;
     notmuch_sort_t sort;
+    notmuch_sort_key_t sort_key;
+    notmuch_sort_type_t sort_type;
     notmuch_string_list_t *exclude_terms;
     notmuch_exclude_t omit_excluded;
     bool parsed;
@@ -109,6 +111,9 @@ notmuch_query_create (notmuch_database_t *notmuch,
 
     query->sort = NOTMUCH_SORT_NEWEST_FIRST;
 
+    query->sort_key = NOTMUCH_SORT_KEY_TIMESTAMP;
+    query->sort_type = NOTMUCH_SORT_TYPE_DESCENDING;
+
     query->exclude_terms = _notmuch_string_list_create (query);
 
     query->omit_excluded = NOTMUCH_EXCLUDE_TRUE;
@@ -170,13 +175,69 @@ notmuch_query_set_omit_excluded (notmuch_query_t *query,
 void
 notmuch_query_set_sort (notmuch_query_t *query, notmuch_sort_t sort)
 {
+    /* only for use by _get_sort */
     query->sort = sort;
+
+    /* translate to new API */
+    switch (sort) {
+    case NOTMUCH_SORT_UNSET:
+	/* this probably indicates an error, but it seems relatively
+	 * harmless, and this code path is deprecated */
+	break;
+    case NOTMUCH_SORT_OLDEST_FIRST:
+	query->sort_key = NOTMUCH_SORT_KEY_TIMESTAMP;
+	query->sort_type = NOTMUCH_SORT_TYPE_ASCENDING;
+	break;
+    case NOTMUCH_SORT_NEWEST_FIRST:
+	query->sort_key = NOTMUCH_SORT_KEY_TIMESTAMP;
+	query->sort_type = NOTMUCH_SORT_TYPE_DESCENDING;
+	break;
+    case NOTMUCH_SORT_MESSAGE_ID:
+	query->sort_key = NOTMUCH_SORT_KEY_MESSAGE_ID;
+	query->sort_type = NOTMUCH_SORT_TYPE_ASCENDING;
+	break;
+    case NOTMUCH_SORT_KEYS:
+	query->sort_key = NOTMUCH_SORT_KEY_MESSAGE_ID;
+	query->sort_type = NOTMUCH_SORT_TYPE_ASCENDING;
+	break;
+    case NOTMUCH_SORT_UNSORTED:
+	query->sort_key = NOTMUCH_SORT_KEY_NONE;
+	query->sort_type = NOTMUCH_SORT_TYPE_NONE;
+	break;
+    }
+
 }
 
 notmuch_sort_t
 notmuch_query_get_sort (const notmuch_query_t *query)
 {
     return query->sort;
+}
+
+void
+notmuch_query_set_sort_key (notmuch_query_t *query, notmuch_sort_key_t sort_key)
+{
+    query->sort = NOTMUCH_SORT_UNSET;
+    query->sort_key = sort_key;
+}
+
+notmuch_sort_key_t
+notmuch_query_get_sort_key (const notmuch_query_t *query)
+{
+    return query->sort_key;
+}
+
+void
+notmuch_query_set_sort_type (notmuch_query_t *query, notmuch_sort_type_t sort_type)
+{
+    query->sort = NOTMUCH_SORT_UNSET;
+    query->sort_type = sort_type;
+}
+
+notmuch_sort_type_t
+notmuch_query_get_sort_type (const notmuch_query_t *query)
+{
+    return query->sort_type;
 }
 
 notmuch_status_t
@@ -320,17 +381,24 @@ _notmuch_query_search_documents (notmuch_query_t *query,
 
 	enquire.set_weighting_scheme (Xapian::BoolWeight ());
 
-	switch (query->sort) {
-	case NOTMUCH_SORT_OLDEST_FIRST:
-	    enquire.set_sort_by_value (NOTMUCH_VALUE_TIMESTAMP, false);
+	bool sort_reverse = false;
+	if (query->sort_type == NOTMUCH_SORT_TYPE_DESCENDING)
+	    sort_reverse = true;
+
+	switch (query->sort_key) {
+	case NOTMUCH_SORT_KEY_TIMESTAMP:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_TIMESTAMP, sort_reverse);
 	    break;
-	case NOTMUCH_SORT_NEWEST_FIRST:
-	    enquire.set_sort_by_value (NOTMUCH_VALUE_TIMESTAMP, true);
+	case NOTMUCH_SORT_KEY_MESSAGE_ID:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_MESSAGE_ID, sort_reverse);
 	    break;
-	case NOTMUCH_SORT_MESSAGE_ID:
-	    enquire.set_sort_by_value (NOTMUCH_VALUE_MESSAGE_ID, false);
+	case NOTMUCH_SORT_KEY_FROM:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_FROM, sort_reverse);
 	    break;
-	case NOTMUCH_SORT_UNSORTED:
+	case NOTMUCH_SORT_KEY_SUBJECT:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_SUBJECT, sort_reverse);
+	    break;
+	case NOTMUCH_SORT_KEY_NONE:
 	    break;
 	}
 
